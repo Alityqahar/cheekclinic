@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jalanin! - Lapor Kerusakan Jalan Palembang</title>
+    <title>Jalankan! - Lapor Kerusakan Jalan Palembang</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -559,7 +559,148 @@
             padding: 0.875rem 1.75rem;
             font-size: 0.9375rem;
         }
-        
+
+        /* Announcement & Government Mode */
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .announcement-item {
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-bg);
+        }
+
+        .announcement-item h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            color: var(--color-text);
+        }
+
+        .announcement-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .announcement-body {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .announcement-empty {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+        }
+
+        .mode-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            padding: 0.35rem 0.8rem;
+            font-size: 0.8125rem;
+            color: var(--color-text-secondary);
+        }
+
+        .mode-chip.active {
+            background: rgba(0, 78, 137, 0.08);
+            color: var(--color-secondary);
+            border-color: rgba(0, 78, 137, 0.25);
+        }
+
+        .gov-panel {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto 2.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .gov-panel.active {
+            display: block;
+        }
+
+        .gov-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .gov-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .gov-header p {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .gov-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .gov-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .report-card {
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            background: var(--color-bg);
+        }
+
+        .report-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: var(--color-text);
+        }
+
+        .report-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 0.8125rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.35rem;
+        }
+
+        .gov-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        body.is-government-mode .hero,
+        body.is-government-mode .container {
+            display: none;
+        }
+
+        body.is-government-mode {
+            background: #f1f4f8;
+        }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -612,6 +753,9 @@
         /* Responsive Design */
         @media (max-width: 1024px) {
             .container {
+                grid-template-columns: 1fr;
+            }
+            .gov-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -692,6 +836,11 @@
 
             .hero-cta {
                 gap: 0.75rem;
+            }
+
+            .gov-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
         
@@ -793,7 +942,7 @@
         </video>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h2 class="hero-title">Jalanin! 🛣️</h2>
+            <h2 class="hero-title">Jalankan! 🛣️</h2>
             <p class="hero-subtitle">Wujudkan jalan yang lebih baik untuk Palembang. Laporkan kerusakan jalan dan bantu infrastruktur kota berkembang lebih baik.</p>
             <div class="hero-cta">
                 <button class="btn btn-primary btn-lg" onclick="openReportModal()">
@@ -812,16 +961,20 @@
             <a href="#" class="logo">
                 <div class="logo-icon">🛣️</div>
                 <div class="logo-text">
-                    <h1>Jalanin!</h1>
+                    <h1>Jalankan!</h1>
                     <p>Lapor Kerusakan Jalan Palembang</p>
                 </div>
             </a>
             <div class="header-actions">
+                <span class="mode-chip" id="modeChip">Mode Publik</span>
+                <button class="btn btn-secondary" onclick="enterGovernmentMode()">
+                    ??? Mode Pemerintah
+                </button>
                 <button class="btn btn-secondary" onclick="showAbout()">
-                    📋 Info
+                    ?? Info
                 </button>
                 <button class="btn btn-primary" onclick="openReportModal()">
-                    ➕ Laporkan Kerusakan
+                    ? Laporkan Kerusakan
                 </button>
             </div>
         </div>
@@ -884,6 +1037,13 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Public Announcement Card -->
+            <div class="card">
+                <h3 class="card-title">Pengumuman</h3>
+                <p class="form-hint">Informasi terbaru dari Mode Pemerintah</p>
+                <div id="announcementList" class="announcement-list"></div>
+            </div>
         </aside>
 
         <!-- Map Container -->
@@ -899,6 +1059,49 @@
             </div>
         </main>
     </div>
+
+    <!-- Government Mode Panel -->
+    <section class="gov-panel" id="govPanel">
+        <div class="gov-header">
+            <div>
+                <div class="mode-chip active">Mode Pemerintah</div>
+                <h2>Panel Kendali Pemerintah</h2>
+                <p>Fokus pada dua fungsi inti: menerima laporan masyarakat dan menyampaikan pengumuman resmi.</p>
+            </div>
+            <div class="gov-actions">
+                <span class="mode-chip active">Sedang di Mode Pemerintah</span>
+                <button class="btn btn-secondary" onclick="exitGovernmentMode()">Kembali ke Mode Publik</button>
+            </div>
+        </div>
+        <div class="gov-grid">
+            <div class="card">
+                <h3 class="card-title">Laporan Masuk</h3>
+                <div id="govReportList" class="report-list"></div>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Pengumuman Pemerintah</h3>
+                <form id="announcementForm" class="gov-form">
+                    <input 
+                        type="text" 
+                        name="title" 
+                        class="form-input" 
+                        placeholder="Judul pengumuman" 
+                        required
+                    >
+                    <textarea 
+                        name="content" 
+                        class="form-textarea" 
+                        placeholder="Isi pengumuman singkat" 
+                        required
+                    ></textarea>
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Publikasikan
+                    </button>
+                </form>
+                <div id="govAnnouncementList" class="announcement-list"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- Report Modal -->
     <div class="modal-overlay" id="reportModal">
@@ -1008,45 +1211,100 @@
         </div>
     </div>
 
-    <!-- Leaflet JS -->
+        <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // Initialize map centered on Palembang
+        const STORAGE_KEYS = {
+            reports: 'jalankan_reports',
+            announcements: 'jalankan_announcements'
+        };
+
+        const statusLabels = {
+            rusak: 'Jalan Rusak',
+            perbaikan: 'Dalam Perbaikan',
+            selesai: 'Perbaikan Selesai'
+        };
+
+        const seedReports = [
+            { id: 1, lat: -2.9760, lng: 104.7754, address: 'Jl. Sudirman', status: 'rusak', description: 'Jalan berlubang besar', reporter: 'Ahmad S.', createdAt: '2026-02-20T08:00:00Z' },
+            { id: 2, lat: -2.9850, lng: 104.7650, address: 'Jl. R. Sukamto', status: 'perbaikan', description: 'Sedang dalam pengaspalan', reporter: 'Siti M.', createdAt: '2026-02-21T08:00:00Z' },
+            { id: 3, lat: -2.9900, lng: 104.7800, address: 'Jl. Kapten A. Rivai', status: 'rusak', description: 'Aspal retak parah', reporter: 'Budi W.', createdAt: '2026-02-22T08:00:00Z' },
+            { id: 4, lat: -2.9700, lng: 104.7700, address: 'Jl. Kolonel H. Burlian', status: 'selesai', description: 'Perbaikan selesai minggu lalu', reporter: 'Dewi L.', createdAt: '2026-02-19T08:00:00Z' },
+            { id: 5, lat: -2.9950, lng: 104.7900, address: 'Jl. Demang Lebar Daun', status: 'perbaikan', description: 'Perbaikan drainase', reporter: 'Eko P.', createdAt: '2026-02-23T08:00:00Z' },
+            { id: 6, lat: -2.9650, lng: 104.7600, address: 'Jl. Jenderal Sudirman', status: 'rusak', description: 'Lubang di tengah jalan', reporter: 'Fitri N.', createdAt: '2026-02-24T08:00:00Z' },
+            { id: 7, lat: -2.9800, lng: 104.7850, address: 'Jl. Veteran', status: 'selesai', description: 'Sudah diaspal ulang', reporter: 'Hadi K.', createdAt: '2026-02-18T08:00:00Z' },
+            { id: 8, lat: -2.9720, lng: 104.7680, address: 'Jl. Tasik', status: 'rusak', description: 'Banyak lubang kecil', reporter: 'Indah S.', createdAt: '2026-02-24T09:00:00Z' },
+            { id: 9, lat: -2.9880, lng: 104.7720, address: 'Jl. Rajawali', status: 'perbaikan', description: 'Pelebaran jalan', reporter: 'Joko T.', createdAt: '2026-02-25T08:00:00Z' },
+            { id: 10, lat: -2.9780, lng: 104.7820, address: 'Jl. Angkatan 45', status: 'rusak', description: 'Permukaan tidak rata', reporter: 'Kartika D.', createdAt: '2026-02-23T15:00:00Z' }
+        ];
+
+        const seedAnnouncements = [
+            { id: 'seed-1', title: 'Pemeliharaan Jalan Utama', content: 'Dinas PU melakukan pengaspalan di koridor Sudirman - KM 5 sepanjang minggu ini.', createdAt: '2026-02-25T02:00:00Z' },
+            { id: 'seed-2', title: 'Penutupan Sementara', content: 'Jl. Rajawali ditutup 6-8 Maret 2026 untuk pengerjaan drainase.', createdAt: '2026-02-26T02:00:00Z' }
+        ];
+
         const map = L.map('map').setView([-2.9760, 104.7754], 13);
-        
-        // Add OpenStreetMap tiles
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
+            attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
-        // Dummy data for road damage reports
-        const dummyReports = [
-            { id: 1, lat: -2.9760, lng: 104.7754, address: 'Jl. Sudirman', status: 'rusak', description: 'Jalan berlubang besar', reporter: 'Ahmad S.' },
-            { id: 2, lat: -2.9850, lng: 104.7650, address: 'Jl. R. Sukamto', status: 'perbaikan', description: 'Sedang dalam pengaspalan', reporter: 'Siti M.' },
-            { id: 3, lat: -2.9900, lng: 104.7800, address: 'Jl. Kapten A. Rivai', status: 'rusak', description: 'Aspal retak parah', reporter: 'Budi W.' },
-            { id: 4, lat: -2.9700, lng: 104.7700, address: 'Jl. Kolonel H. Burlian', status: 'selesai', description: 'Perbaikan selesai minggu lalu', reporter: 'Dewi L.' },
-            { id: 5, lat: -2.9950, lng: 104.7900, address: 'Jl. Demang Lebar Daun', status: 'perbaikan', description: 'Perbaikan drainase', reporter: 'Eko P.' },
-            { id: 6, lat: -2.9650, lng: 104.7600, address: 'Jl. Jenderal Sudirman', status: 'rusak', description: 'Lubang di tengah jalan', reporter: 'Fitri N.' },
-            { id: 7, lat: -2.9800, lng: 104.7850, address: 'Jl. Veteran', status: 'selesai', description: 'Sudah diaspal ulang', reporter: 'Hadi K.' },
-            { id: 8, lat: -2.9720, lng: 104.7680, address: 'Jl. Tasik', status: 'rusak', description: 'Banyak lubang kecil', reporter: 'Indah S.' },
-            { id: 9, lat: -2.9880, lng: 104.7720, address: 'Jl. Rajawali', status: 'perbaikan', description: 'Pelebaran jalan', reporter: 'Joko T.' },
-            { id: 10, lat: -2.9780, lng: 104.7820, address: 'Jl. Angkatan 45', status: 'rusak', description: 'Permukaan tidak rata', reporter: 'Kartika D.' },
-        ];
-
-        // Store markers
         let markers = [];
         let selectedLocation = null;
+        let reports = [];
+        let announcements = [];
 
-        // Create custom icon function
+        function readStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (err) {
+                console.warn('Storage tidak tersedia, gunakan fallback', err);
+                return fallback;
+            }
+        }
+
+        function writeStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (err) {
+                console.warn('Gagal menyimpan ke localStorage', err);
+            }
+        }
+
+        function bootstrapReports() {
+            const stored = readStorage(STORAGE_KEYS.reports, null);
+            if (stored && Array.isArray(stored)) return stored;
+            writeStorage(STORAGE_KEYS.reports, seedReports);
+            return [...seedReports];
+        }
+
+        function bootstrapAnnouncements() {
+            const stored = readStorage(STORAGE_KEYS.announcements, null);
+            if (stored && Array.isArray(stored)) return stored;
+            writeStorage(STORAGE_KEYS.announcements, seedAnnouncements);
+            return [...seedAnnouncements];
+        }
+
+        function escapeHtml(str = '') {
+            return str.replace(/[&<>"']/g, match => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[match]);
+        }
+
+        function formatDate(iso) {
+            const date = new Date(iso);
+            return date.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
         function createMarkerIcon(status) {
-            const iconMap = {
-                'rusak': '⚠️',
-                'perbaikan': '🚧',
-                'selesai': '✅'
-            };
-            
+            const iconMap = { rusak: '??', perbaikan: '??', selesai: '?' };
             return L.divIcon({
                 className: 'custom-marker',
                 html: `<div class="marker-icon marker-${status}">${iconMap[status]}</div>`,
@@ -1056,40 +1314,37 @@
             });
         }
 
-        // Add markers to map
-        function addMarkers() {
-            dummyReports.forEach(report => {
+        function renderMarkers() {
+            markers.forEach(({ marker }) => map.removeLayer(marker));
+            markers = [];
+
+            reports.forEach(report => {
                 const marker = L.marker([report.lat, report.lng], {
                     icon: createMarkerIcon(report.status)
                 }).addTo(map);
 
-                const statusLabels = {
-                    'rusak': 'Jalan Rusak',
-                    'perbaikan': 'Dalam Perbaikan',
-                    'selesai': 'Perbaikan Selesai'
-                };
-
                 marker.bindPopup(`
                     <div>
-                        <div class="popup-title">${report.address}</div>
-                        <div class="popup-detail"><strong>Deskripsi:</strong> ${report.description}</div>
-                        <div class="popup-detail"><strong>Pelapor:</strong> ${report.reporter}</div>
+                        <div class="popup-title">${escapeHtml(report.address)}</div>
+                        <div class="popup-detail"><strong>Deskripsi:</strong> ${escapeHtml(report.description)}</div>
+                        <div class="popup-detail"><strong>Pelapor:</strong> ${escapeHtml(report.reporter || 'Anonim')}</div>
                         <span class="popup-status ${report.status}">${statusLabels[report.status]}</span>
                     </div>
                 `);
 
                 markers.push({ marker, status: report.status });
             });
+
+            filterMarkers();
         }
 
-        // Filter markers based on checkbox selection
         function filterMarkers() {
             const rusak = document.querySelector('[data-filter="rusak"]').checked;
             const perbaikan = document.querySelector('[data-filter="perbaikan"]').checked;
             const selesai = document.querySelector('[data-filter="selesai"]').checked;
 
             markers.forEach(({ marker, status }) => {
-                const shouldShow = 
+                const shouldShow =
                     (status === 'rusak' && rusak) ||
                     (status === 'perbaikan' && perbaikan) ||
                     (status === 'selesai' && selesai);
@@ -1102,18 +1357,14 @@
             });
         }
 
-        // Reset map view to Palembang center
         function resetMapView() {
             map.setView([-2.9760, 104.7754], 13);
         }
 
-        // Modal functions
         function openReportModal() {
             const modal = document.getElementById('reportModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
-            // Enable map clicking for location selection
             map.once('click', onMapClick);
         }
 
@@ -1129,99 +1380,190 @@
             selectedLocation = e.latlng;
             document.getElementById('latitude').value = e.latlng.lat;
             document.getElementById('longitude').value = e.latlng.lng;
-            
+
             const preview = document.getElementById('locationPreview');
             preview.classList.add('active');
-            preview.textContent = `✓ Lokasi dipilih: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+            preview.textContent = `? Lokasi dipilih: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
         }
 
         function resetLocationPreview() {
             const preview = document.getElementById('locationPreview');
             preview.classList.remove('active');
-            preview.textContent = '📍 Klik peta untuk memilih lokasi';
+            preview.textContent = '?? Klik peta untuk memilih lokasi';
             selectedLocation = null;
         }
 
-        // Handle form submission
-        document.getElementById('reportForm').addEventListener('submit', function(e) {
+        document.getElementById('reportForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             if (!selectedLocation) {
                 alert('Silakan pilih lokasi pada peta terlebih dahulu');
                 return;
             }
 
-            // Simulate form submission
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            console.log('Report submitted:', {
-                ...data,
-                location: selectedLocation
-            });
+            const data = Object.fromEntries(new FormData(this));
+            const newReport = {
+                id: Date.now(),
+                lat: selectedLocation.lat,
+                lng: selectedLocation.lng,
+                address: data.address,
+                status: data.status,
+                description: data.description,
+                reporter: data.reporterName || 'Anonim',
+                contact: data.contact || '',
+                createdAt: new Date().toISOString()
+            };
 
-            // Close modal
+            reports = [newReport, ...reports];
+            writeStorage(STORAGE_KEYS.reports, reports);
+
+            renderMarkers();
+            renderStats();
+            renderReportList();
+            showToast('Laporan tersimpan!', 'Data laporan disimpan di perangkat Anda.');
             closeReportModal();
-            
-            // Show success toast
-            showToast();
-            
-            // Add new marker to map (demo purpose)
-            const newMarker = L.marker([selectedLocation.lat, selectedLocation.lng], {
-                icon: createMarkerIcon(data.status)
-            }).addTo(map);
-
-            newMarker.bindPopup(`
-                <div>
-                    <div class="popup-title">${data.address}</div>
-                    <div class="popup-detail"><strong>Deskripsi:</strong> ${data.description}</div>
-                    <div class="popup-detail"><strong>Pelapor:</strong> ${data.reporterName || 'Anonim'}</div>
-                    <span class="popup-status ${data.status}">${document.querySelector(`#status option[value="${data.status}"]`).textContent}</span>
-                </div>
-            `);
-
-            markers.push({ marker: newMarker, status: data.status });
-            
-            // Update statistics
-            updateStatistics(data.status);
         });
 
-        // Show toast notification
-        function showToast() {
+        function showToast(title = 'Berhasil!', message = 'Data tersimpan di perangkat Anda.') {
             const toast = document.getElementById('toast');
+            toast.querySelector('h4').textContent = title;
+            toast.querySelector('p').textContent = message;
             toast.classList.add('active');
-            
+
             setTimeout(() => {
                 toast.classList.remove('active');
             }, 4000);
         }
 
-        // Update statistics after new report
-        function updateStatistics(status) {
+        function renderStats() {
             const statTotal = document.getElementById('stat-total');
-            const statStatus = document.getElementById(`stat-${status}`);
-            
-            statTotal.textContent = parseInt(statTotal.textContent) + 1;
-            statStatus.textContent = parseInt(statStatus.textContent) + 1;
+            const statRusak = document.getElementById('stat-rusak');
+            const statPerbaikan = document.getElementById('stat-perbaikan');
+            const statSelesai = document.getElementById('stat-selesai');
+
+            const counts = reports.reduce((acc, report) => {
+                acc.total += 1;
+                acc[report.status] += 1;
+                return acc;
+            }, { total: 0, rusak: 0, perbaikan: 0, selesai: 0 });
+
+            statTotal.textContent = counts.total;
+            statRusak.textContent = counts.rusak;
+            statPerbaikan.textContent = counts.perbaikan;
+            statSelesai.textContent = counts.selesai;
         }
 
-        // Show about info
+        function renderReportList() {
+            const container = document.getElementById('govReportList');
+            if (!container) return;
+
+            if (!reports.length) {
+                container.innerHTML = '<p class="announcement-empty">Belum ada laporan tersimpan.</p>';
+                return;
+            }
+
+            container.innerHTML = reports.map(report => `
+                <div class="report-card">
+                    <h4>${escapeHtml(report.address)}</h4>
+                    <div class="report-meta">
+                        <span>${statusLabels[report.status]}</span>
+                        <span>${formatDate(report.createdAt)}</span>
+                        <span>Pelapor: ${escapeHtml(report.reporter || 'Anonim')}</span>
+                    </div>
+                    <p class="announcement-body">${escapeHtml(report.description)}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderAnnouncements() {
+            const publicContainer = document.getElementById('announcementList');
+            const govContainer = document.getElementById('govAnnouncementList');
+
+            const renderInto = (el) => {
+                if (!el) return;
+                if (!announcements.length) {
+                    el.innerHTML = '<p class="announcement-empty">Belum ada pengumuman.</p>';
+                    return;
+                }
+                el.innerHTML = announcements.map(item => `
+                    <div class="announcement-item">
+                        <h4>${escapeHtml(item.title)}</h4>
+                        <div class="announcement-meta">${formatDate(item.createdAt)}</div>
+                        <div class="announcement-body">${escapeHtml(item.content)}</div>
+                    </div>
+                `).join('');
+            };
+
+            renderInto(publicContainer);
+            renderInto(govContainer);
+        }
+
+        const announcementForm = document.getElementById('announcementForm');
+        if (announcementForm) {
+            announcementForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const title = (formData.get('title') || '').trim();
+                const content = (formData.get('content') || '').trim();
+
+                if (!title || !content) return;
+
+                const newAnnouncement = {
+                    id: Date.now(),
+                    title,
+                    content,
+                    createdAt: new Date().toISOString()
+                };
+
+                announcements = [newAnnouncement, ...announcements];
+                writeStorage(STORAGE_KEYS.announcements, announcements);
+                renderAnnouncements();
+                this.reset();
+                showToast('Pengumuman diterbitkan', 'Pengumuman tersimpan di perangkat Anda.');
+            });
+        }
+
+        function enterGovernmentMode() {
+            document.body.classList.add('is-government-mode');
+            document.getElementById('govPanel').classList.add('active');
+            const chip = document.getElementById('modeChip');
+            if (chip) {
+                chip.textContent = 'Mode Pemerintah Aktif';
+                chip.classList.add('active');
+            }
+            document.getElementById('govPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exitGovernmentMode() {
+            document.body.classList.remove('is-government-mode');
+            document.getElementById('govPanel').classList.remove('active');
+            const chip = document.getElementById('modeChip');
+            if (chip) {
+                chip.textContent = 'Mode Publik';
+                chip.classList.remove('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function showAbout() {
-            alert('Jalanin! adalah platform pelaporan kerusakan jalan di Palembang.\n\nBantu tingkatkan infrastruktur kota dengan melaporkan kerusakan jalan yang Anda temui.\n\nLaporan Anda akan membantu pemerintah dalam prioritas perbaikan jalan.');
+            alert('Jalankan! adalah platform pelaporan kerusakan jalan di Palembang.\n\nBantu tingkatkan infrastruktur kota dengan melaporkan kerusakan jalan yang Anda temui.\n\nLaporan dan pengumuman Anda disimpan secara lokal di perangkat ini.');
         }
 
-        // Close modal when clicking overlay
-        document.getElementById('reportModal').addEventListener('click', function(e) {
+        document.getElementById('reportModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeReportModal();
             }
         });
 
-        // Initialize markers on load
-        addMarkers();
-        
-        // Add map click instruction
-        console.log('🗺️ Klik pada peta untuk memilih lokasi laporan');
+        reports = bootstrapReports();
+        announcements = bootstrapAnnouncements();
+
+        renderMarkers();
+        renderStats();
+        renderReportList();
+        renderAnnouncements();
+
+        console.log('Klik pada peta untuk memilih lokasi laporan');
     </script>
 </body>
 </html>
