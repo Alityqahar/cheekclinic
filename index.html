@@ -438,17 +438,6 @@
             to { opacity: 1; }
         }
         
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
         .modal {
             background: var(--color-surface);
             border-radius: var(--radius-xl);
@@ -968,13 +957,13 @@
             <div class="header-actions">
                 <span class="mode-chip" id="modeChip">Mode Publik</span>
                 <button class="btn btn-secondary" onclick="enterGovernmentMode()">
-                    ??? Mode Pemerintah
+                    🏛️ Mode Pemerintah
                 </button>
                 <button class="btn btn-secondary" onclick="showAbout()">
-                    ?? Info
+                    ℹ️ Info
                 </button>
                 <button class="btn btn-primary" onclick="openReportModal()">
-                    ? Laporkan Kerusakan
+                    🚨 Laporkan Kerusakan
                 </button>
             </div>
         </div>
@@ -1211,7 +1200,7 @@
         </div>
     </div>
 
-        <!-- Leaflet JS -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
@@ -1304,7 +1293,11 @@
         }
 
         function createMarkerIcon(status) {
-            const iconMap = { rusak: '??', perbaikan: '??', selesai: '?' };
+            const iconMap = {
+                rusak: '🔴',
+                perbaikan: '🟠',
+                selesai: '✅'
+            };
             return L.divIcon({
                 className: 'custom-marker',
                 html: `<div class="marker-icon marker-${status}">${iconMap[status]}</div>`,
@@ -1383,13 +1376,13 @@
 
             const preview = document.getElementById('locationPreview');
             preview.classList.add('active');
-            preview.textContent = `? Lokasi dipilih: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+            preview.textContent = `📍 Lokasi dipilih: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
         }
 
         function resetLocationPreview() {
             const preview = document.getElementById('locationPreview');
             preview.classList.remove('active');
-            preview.textContent = '?? Klik peta untuk memilih lokasi';
+            preview.textContent = '📍 Klik peta untuk memilih lokasi';
             selectedLocation = null;
         }
 
@@ -1562,8 +1555,6 @@
         renderStats();
         renderReportList();
         renderAnnouncements();
-
-        console.log('Klik pada peta untuk memilih lokasi laporan');
     </script>
 </body>
 </html>
